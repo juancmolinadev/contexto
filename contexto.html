@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Effect</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .matrix {
+            color: limegreen;
+            font-size: 2em;
+            white-space: nowrap;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(-100vh);
+            animation: fall 0.1s forwards; /* Velocidad de caída ajustada a 0.1s */
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh);
+                opacity: 0;
+            }
+            70% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix" id="matrixText"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const targetText = "te la tragas sin pretexto";
+            const matrixContainer = document.getElementById('matrixText');
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            const speed = 50;
+            const delay = 200; // delay between falling letters
+            let displayText = Array(targetText.length).fill('');
+            let finished = Array(targetText.length).fill(false);
+
+            function getRandomChar() {
+                return chars[Math.floor(Math.random() * chars.length)];
+            }
+
+            function createFallingLetter(index) {
+                const span = document.createElement('span');
+                span.classList.add('letter');
+                span.style.animationDelay = `${index * delay}ms`;
+                span.textContent = getRandomChar();
+                matrixContainer.appendChild(span);
+                return span;
+            }
+
+            const spans = targetText.split('').map((char, index) => char === ' ' ? ' ' : createFallingLetter(index));
+
+            function matrixEffect() {
+                let allFinished = true;
+
+                for (let i = 0; i < targetText.length; i++) {
+                    if (spans[i] === ' ') continue; // Skip spaces
+
+                    if (!finished[i]) {
+                        spans[i].textContent = getRandomChar();
+                        allFinished = false;
+
+                        if (Math.random() < 0.1) {
+                            spans[i].textContent = targetText[i];
+                            finished[i] = true;
+                        }
+                    } else {
+                        spans[i].textContent = targetText[i];
+                    }
+                }
+
+                if (!allFinished) {
+                    setTimeout(matrixEffect, speed);
+                }
+            }
+
+            // Start the matrix effect after the letters have finished falling
+            setTimeout(matrixEffect, delay * targetText.length + 1000); // Extra delay to ensure all letters have fallen
+        });
+    </script>
+</body>
+</html>
